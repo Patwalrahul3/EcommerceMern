@@ -1,13 +1,24 @@
 import { Link } from 'react-router-dom';
 import { Row, Col, Image, ListGroup, Card, Button, ListGroupItem } from 'react-bootstrap';
 import { useParams } from 'react-router-dom'
-import products from '../products';
+import axios from 'axios';
+
 import Rating from '../components/Rating';
+import { useState, useEffect } from 'react';
 
 const ProductScreen = () => {
-    const { id: ProductId } = useParams();
-    const product = products.find((p) => p._id === ProductId);
-    console.log(product);
+    const [product, setProduct] = useState({});
+    const { id: productId } = useParams();
+
+    useEffect(() => {
+        const fetchProduct = async () => {
+            const { data } = await axios.get(`/api/products/${productId}`);
+            setProduct(data);
+
+        }
+        fetchProduct();
+
+    }, [productId])
 
     return (
         <>
@@ -34,9 +45,9 @@ const ProductScreen = () => {
 
                         <ListGroup.Item>
                             <Button
-                            className='btn-block'
-                            type='button'
-                            disabled={product.countInStock === 0}>
+                                className='btn-block'
+                                type='button'
+                                disabled={product.countInStock === 0}>
                                 Add To Cart
                             </Button>
 
@@ -53,7 +64,7 @@ const ProductScreen = () => {
                             <Row>
                                 <Col>Price:</Col>
                                 <Col>
-                                <strong>${product.price}</strong>
+                                    <strong>${product.price}</strong>
                                 </Col>
                             </Row>
                         </ListGroup.Item>
@@ -62,7 +73,7 @@ const ProductScreen = () => {
                             <Row>
                                 <Col>Status:</Col>
                                 <Col>
-                                <strong>${product.countInStock > 0 ? 'In Stock' : 'Out Of Stock'}</strong>
+                                    <strong>${product.countInStock > 0 ? 'In Stock' : 'Out Of Stock'}</strong>
                                 </Col>
                             </Row>
                         </ListGroup.Item>
